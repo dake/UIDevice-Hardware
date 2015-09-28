@@ -14,16 +14,23 @@ typedef NS_ENUM(NSInteger, TCDevicePlatform) {
     kTCDeviceSimulatoriPad,
     kTCDeviceSimulatorAppleTV,
     
+    
     kTCDevice1GiPhone,
     kTCDevice3GiPhone,
     kTCDevice3GSiPhone,
+    
     kTCDevice4iPhone,
     kTCDevice4SiPhone,
+    
     kTCDevice5iPhone,
     kTCDevice5CiPhone,
     kTCDevice5SiPhone,
+    
     kTCDevice6iPhone,
     kTCDevice6PlusiPhone,
+    
+    kTCDevice6SiPhone,
+    kTCDevice6SPlusiPhone,
     
     kTCDevice1GiPod,
     kTCDevice2GiPod,
@@ -51,7 +58,6 @@ typedef NS_ENUM(NSInteger, TCDevicePlatform) {
     kTCDeviceUnknowniPod,
     kTCDeviceUnknowniPad,
     kTCDeviceUnknownAppleTV,
-    kTCDeviceIFPGA,
     
     
     kTCDeviceCount,

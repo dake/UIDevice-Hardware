@@ -28,6 +28,8 @@ static NSString *s_device_names[kTCDeviceCount] = {
     [kTCDevice5SiPhone] = @"iPhone 5S",
     [kTCDevice6iPhone] = @"iPhone 6",
     [kTCDevice6PlusiPhone] = @"iPhone 6 Plus",
+    [kTCDevice6SiPhone] = @"iPhone 6S",
+    [kTCDevice6SPlusiPhone] = @"iPhone 6S Plus",
     [kTCDeviceUnknowniPhone] = @"Unknown iPhone",
     
     // iPod
@@ -66,15 +68,11 @@ static NSString *s_device_names[kTCDeviceCount] = {
     [kTCDeviceSimulatoriPhone] = @"iPhone Simulator",
     [kTCDeviceSimulatoriPad] = @"iPad Simulator",
     [kTCDeviceSimulatorAppleTV] = @"Apple TV Simulator",
-    
-    [kTCDeviceIFPGA] = @"iFPGA",
 };
 
 @implementation UIDevice (Hardware)
 /*
  Platforms
- 
- iFPGA ->        ??
 
  iPhone1,1 ->    iPhone 1G, M68
  iPhone1,2 ->    iPhone 3G, N82
@@ -194,13 +192,13 @@ static NSString *s_device_names[kTCDeviceCount] = {
 
 - (NSNumber *)totalDiskSpace
 {
-    NSDictionary *fattributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:nil];
+    NSDictionary *fattributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:NULL];
     return [fattributes objectForKey:NSFileSystemSize];
 }
 
 - (NSNumber *)freeDiskSpace
 {
-    NSDictionary *fattributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:nil];
+    NSDictionary *fattributes = [[NSFileManager defaultManager] attributesOfFileSystemForPath:NSHomeDirectory() error:NULL];
     return [fattributes objectForKey:NSFileSystemFreeSize];
 }
 
@@ -210,9 +208,6 @@ static NSString *s_device_names[kTCDeviceCount] = {
 - (TCDevicePlatform)platformType
 {
     NSString *platform = self.platform;
-
-    // The ever mysterious iFPGA
-    if ([platform isEqualToString:@"iFPGA"])        return kTCDeviceIFPGA;
 
     // iPhone
     if ([platform isEqualToString:@"iPhone1,1"])    return kTCDevice1GiPhone;
@@ -229,10 +224,11 @@ static NSString *s_device_names[kTCDeviceCount] = {
             return kTCDevice5CiPhone;
         }
     }
-    
     if ([platform hasPrefix:@"iPhone6"])            return kTCDevice5SiPhone;
     if ([platform hasPrefix:@"iPhone7,1"])          return kTCDevice6PlusiPhone;
     if ([platform hasPrefix:@"iPhone7,2"])          return kTCDevice6iPhone;
+    if ([platform hasPrefix:@"iPhone8,1"])          return kTCDevice6SPlusiPhone;
+    if ([platform hasPrefix:@"iPhone8,2"])          return kTCDevice6SiPhone;
     
     // iPod
     if ([platform hasPrefix:@"iPod1"])              return kTCDevice1GiPod;
@@ -304,6 +300,14 @@ static NSString *s_device_names[kTCDeviceCount] = {
     TCDevicePlatform type = self.platformType;
     if (type < kTCDeviceUnknown || type >= kTCDeviceCount) {
         type = kTCDeviceUnknown;
+    }
+    
+    if (type == kTCDeviceUnknown
+        || type == kTCDeviceUnknowniPhone
+        || type == kTCDeviceUnknowniPod
+        || type == kTCDeviceUnknowniPad
+        || type == kTCDeviceUnknownAppleTV) {
+        return self.platform;
     }
     
     return s_device_names[type];
