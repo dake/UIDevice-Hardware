@@ -4,7 +4,10 @@
  BSD License, Use at your own risk
  */
 
-// Thanks to Emanuele Vulcano, Kevin Ballard/Eridius, Ryandjohnson, Matt Brown, etc.
+/** Thanks to
+ https://github.com/Ekhoo/Device/blob/master/Source/Device.swift
+ https://github.com/lmirosevic/GBDeviceInfo
+ */
 
 #include <sys/socket.h> // Per msqr
 #include <sys/sysctl.h>
@@ -51,11 +54,15 @@ static NSString *s_device_names[kTCDeviceCount] = {
     [kTCDevice1GiPadMini] = @"iPad Mini 1G",
     [kTCDevice2GiPadMini] = @"iPad Mini 2G",
     [kTCDevice3GiPadMini] = @"iPad Mini 3G",
+    [kTCDevice4GiPadMini] = @"iPad Mini 4G",
     
     // ipad Air
     [kTCDevice1GiPadAir] = @"iPad Air 1G",
     [kTCDevice2GiPadAir] = @"iPad Air 2G",
     [kTCDeviceUnknowniPad] = @"Unknown iPad",
+    
+    // ipad pro
+    [kTCDevice1GiPadPro] = @"iPad Pro 1G",
     
     // apple TV
     [kTCDeviceAppleTV2] = @"Apple TV 2G",
@@ -71,45 +78,6 @@ static NSString *s_device_names[kTCDeviceCount] = {
 };
 
 @implementation UIDevice (Hardware)
-/*
- Platforms
-
- iPhone1,1 ->    iPhone 1G, M68
- iPhone1,2 ->    iPhone 3G, N82
- iPhone2,1 ->    iPhone 3GS, N88
- iPhone3,1 ->    iPhone 4/AT&T, N89
- iPhone3,2 ->    iPhone 4/Other Carrier?, ??
- iPhone3,3 ->    iPhone 4/Verizon, TBD
- iPhone4,1 ->    (iPhone 4S/GSM), TBD
- iPhone4,2 ->    (iPhone 4S/CDMA), TBD
- iPhone4,3 ->    (iPhone 4S/???)
- iPhone5,1 ->    iPhone Next Gen, TBD
- iPhone5,1 ->    iPhone Next Gen, TBD
- iPhone5,1 ->    iPhone Next Gen, TBD
-
- iPod1,1   ->    iPod touch 1G, N45
- iPod2,1   ->    iPod touch 2G, N72
- iPod2,2   ->    Unknown, ??
- iPod3,1   ->    iPod touch 3G, N18
- iPod4,1   ->    iPod touch 4G, N80
- 
- // Thanks NSForge
- iPad1,1   ->    iPad 1G, WiFi and 3G, K48
- iPad2,1   ->    iPad 2G, WiFi, K93
- iPad2,2   ->    iPad 2G, GSM 3G, K94
- iPad2,3   ->    iPad 2G, CDMA 3G, K95
- iPad3,1   ->    (iPad 3G, WiFi)
- iPad3,2   ->    (iPad 3G, GSM)
- iPad3,3   ->    (iPad 3G, CDMA)
- iPad4,1   ->    (iPad 4G, WiFi)
- iPad4,2   ->    (iPad 4G, GSM)
- iPad4,3   ->    (iPad 4G, CDMA)
-
- AppleTV2,1 ->   AppleTV 2, K66
- AppleTV3,1 ->   AppleTV 3, ??
-
- i386, x86_64 -> iPhone Simulator
-*/
 
 
 #pragma mark - sysctlbyname utils
@@ -211,79 +179,76 @@ static NSString *s_device_names[kTCDeviceCount] = {
 
     // iPhone
     if ([platform isEqualToString:@"iPhone1,1"])    return kTCDevice1GiPhone;
-    if ([platform isEqualToString:@"iPhone1,2"])    return kTCDevice3GiPhone;
-    if ([platform hasPrefix:@"iPhone2"])            return kTCDevice3GSiPhone;
-    if ([platform hasPrefix:@"iPhone3"])            return kTCDevice4iPhone;
-    if ([platform hasPrefix:@"iPhone4"])            return kTCDevice4SiPhone;
-    if ([platform hasPrefix:@"iPhone5"]) {
+    else if ([platform isEqualToString:@"iPhone1,2"])    return kTCDevice3GiPhone;
+    else if ([platform hasPrefix:@"iPhone2"])            return kTCDevice3GSiPhone;
+    else if ([platform hasPrefix:@"iPhone3"])            return kTCDevice4iPhone;
+    else if ([platform hasPrefix:@"iPhone4"])            return kTCDevice4SiPhone;
+    else if ([platform hasPrefix:@"iPhone5"]) {
         NSInteger subVersion = [[[platform componentsSeparatedByString:@","] lastObject] integerValue];
         if (subVersion <= 2) {
             return kTCDevice5iPhone;
-        }
-        else if (subVersion <= 4) {
+        } else if (subVersion <= 4) {
             return kTCDevice5CiPhone;
         }
     }
-    if ([platform hasPrefix:@"iPhone6"])            return kTCDevice5SiPhone;
-    if ([platform hasPrefix:@"iPhone7,1"])          return kTCDevice6PlusiPhone;
-    if ([platform hasPrefix:@"iPhone7,2"])          return kTCDevice6iPhone;
-    if ([platform hasPrefix:@"iPhone8,1"])          return kTCDevice6SPlusiPhone;
-    if ([platform hasPrefix:@"iPhone8,2"])          return kTCDevice6SiPhone;
+    else if ([platform hasPrefix:@"iPhone6"])            return kTCDevice5SiPhone;
+    else if ([platform hasPrefix:@"iPhone7,1"])          return kTCDevice6PlusiPhone;
+    else if ([platform hasPrefix:@"iPhone7,2"])          return kTCDevice6iPhone;
+    else if ([platform hasPrefix:@"iPhone8,1"])          return kTCDevice6SPlusiPhone;
+    else if ([platform hasPrefix:@"iPhone8,2"])          return kTCDevice6SiPhone;
     
     // iPod
-    if ([platform hasPrefix:@"iPod1"])              return kTCDevice1GiPod;
-    if ([platform hasPrefix:@"iPod2"])              return kTCDevice2GiPod;
-    if ([platform hasPrefix:@"iPod3"])              return kTCDevice3GiPod;
-    if ([platform hasPrefix:@"iPod4"])              return kTCDevice4GiPod;
-    if ([platform hasPrefix:@"iPod5"])              return kTCDevice5GiPod;
-    if ([platform hasPrefix:@"iPod7"])              return kTCDevice6GiPod;
+    else if ([platform hasPrefix:@"iPod1"])              return kTCDevice1GiPod;
+    else if ([platform hasPrefix:@"iPod2"])              return kTCDevice2GiPod;
+    else if ([platform hasPrefix:@"iPod3"])              return kTCDevice3GiPod;
+    else if ([platform hasPrefix:@"iPod4"])              return kTCDevice4GiPod;
+    else if ([platform hasPrefix:@"iPod5"])              return kTCDevice5GiPod;
+    else if ([platform hasPrefix:@"iPod7"])              return kTCDevice6GiPod;
 
     // iPad
-    if ([platform hasPrefix:@"iPad1"])              return kTCDevice1GiPad;
-    if ([platform hasPrefix:@"iPad2"]) {
+    else if ([platform hasPrefix:@"iPad1"])              return kTCDevice1GiPad;
+    else if ([platform hasPrefix:@"iPad2"]) {
         NSInteger subVersion = [[[platform componentsSeparatedByString:@","] lastObject] integerValue];
         if (subVersion <= 4) {
             return kTCDevice2GiPad;
-        }
-        else if (subVersion <= 7) {
+        } else if (subVersion <= 7) {
             return kTCDevice1GiPadMini;
         }
     }
-    if ([platform hasPrefix:@"iPad3"]) {
+    else if ([platform hasPrefix:@"iPad3"]) {
         NSInteger subVersion = [[[platform componentsSeparatedByString:@","] lastObject] integerValue];
         if (subVersion <= 3) {
             return kTCDevice3GiPad;
-        }
-        else if (subVersion <= 6) {
+        } else if (subVersion <= 6) {
             return kTCDevice4GiPad;
         }
     }
-    if ([platform hasPrefix:@"iPad4"]) {
+    else if ([platform hasPrefix:@"iPad4"]) {
         NSInteger subVersion = [[[platform componentsSeparatedByString:@","] lastObject] integerValue];
         if (subVersion <= 3) {
             return kTCDevice1GiPadAir;
-        }
-        else if (subVersion <= 6) {
+        } else if (subVersion <= 6) {
             return kTCDevice2GiPadMini;
-        }
-        else if (subVersion <= 9) {
+        } else if (subVersion <= 9) {
             return kTCDevice3GiPadMini;
         }
     }
-    
-    if ([platform hasPrefix:@"iPad5"])              return kTCDevice2GiPadAir;
+    else if ([platform hasPrefix:@"iPad5"]) {
+        NSInteger subVersion = [[[platform componentsSeparatedByString:@","] lastObject] integerValue];
+        if (subVersion <= 2) {
+            return kTCDevice4GiPadMini;
+        } else if (subVersion <= 4) {
+            return kTCDevice2GiPadAir;
+        }
+    }
+    else if ([platform hasPrefix:@"iPad6"])              return kTCDevice1GiPadPro;
     
     // Apple TV
-    if ([platform hasPrefix:@"AppleTV2"])           return kTCDeviceAppleTV2;
-    if ([platform hasPrefix:@"AppleTV3"])           return kTCDeviceAppleTV3;
-
-    if ([platform hasPrefix:@"iPhone"])             return kTCDeviceUnknowniPhone;
-    if ([platform hasPrefix:@"iPod"])               return kTCDeviceUnknowniPod;
-    if ([platform hasPrefix:@"iPad"])               return kTCDeviceUnknowniPad;
-    if ([platform hasPrefix:@"AppleTV"])            return kTCDeviceUnknownAppleTV;
+    else if ([platform hasPrefix:@"AppleTV2"])           return kTCDeviceAppleTV2;
+    else if ([platform hasPrefix:@"AppleTV3"])           return kTCDeviceAppleTV3;
     
     // Simulator thanks Jordan Breeding
-    if ([platform hasSuffix:@"86"] || [platform isEqual:@"x86_64"]) {
+    else if ([platform hasSuffix:@"86"] || [platform isEqualToString:@"x86_64"]) {
         switch (UI_USER_INTERFACE_IDIOM()) {
             case UIUserInterfaceIdiomPad: return kTCDeviceSimulatoriPad;
             case UIUserInterfaceIdiomPhone: return kTCDeviceSimulatoriPhone;
@@ -292,6 +257,12 @@ static NSString *s_device_names[kTCDeviceCount] = {
         }
     }
 
+    //
+    if ([platform hasPrefix:@"iPhone"])                  return kTCDeviceUnknowniPhone;
+    if ([platform hasPrefix:@"iPod"])               return kTCDeviceUnknowniPod;
+    if ([platform hasPrefix:@"iPad"])               return kTCDeviceUnknowniPad;
+    if ([platform hasPrefix:@"AppleTV"])            return kTCDeviceUnknownAppleTV;
+    
     return kTCDeviceUnknown;
 }
 
